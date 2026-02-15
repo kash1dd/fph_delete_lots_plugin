@@ -1,0 +1,20 @@
+{
+  "manifest": 1,
+  "plugin_version": "1.0.1",
+  "app_version": ">=0.2.7",
+  "plugin_id": "com.github.kash1dd.delete_lots",
+  "name": "Delete Lots Plugin",
+  "description": "Добавляет команду /del_lots, с помощью которой можно выбрать категории, в которых нужно удалить лоты.",
+  "description_en": "Adds the /del_lots command, which allows you to select categories in which lots should be deleted.",
+  "description_ua": "Додає команду /del_lots, за допомогою якої можна вибрати категорії, де потрібно видалити лоти.",
+  "repo": "https://github.com/kash1dd/fph_delete_lots_plugin",
+  "author": {
+    "name": "kash1dd",
+    "mail": "nonono@gmail.com",
+    "website": "https://github.com/kash1dd",
+    "social": {
+      "Telegram": "@Mark7227"
+    }
+  },
+  "entry_point": "src.plugin.DeleteLotsPlugin"
+}
