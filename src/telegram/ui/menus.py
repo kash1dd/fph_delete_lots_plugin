@@ -44,7 +44,7 @@ class OffersListMenuBuilder(
         return Menu(
             main_keyboard=kb,
             header_text='🗑️ <b><u>Удаление лотов</u></b>',
-            footer_text='Выбери категории, лоты которых ты хочешь удалить',
+            footer_text='<i>Выбери категории, лоты которых ты хочешь удалить</i>',
             finalizer=StripAndNavigationFinalizer(back_button=ctx.data['show_back']),
         )
 
