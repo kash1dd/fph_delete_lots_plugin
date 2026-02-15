@@ -1,6 +1,6 @@
 {
   "manifest": 1,
-  "plugin_version": "1.0.1",
+  "plugin_version": "1.0.0",
   "app_version": ">=0.2.7",
   "plugin_id": "com.github.kash1dd.delete_lots",
   "name": "Delete Lots Plugin",
