@@ -32,7 +32,9 @@ class AddDeleteLotsButtonModification(
         menu.main_keyboard.add_callback_button(
             button_id='delete_lots_plugin',
             text='🗑️ Удалить лоты',
-            callback_data=ChooseCategoriesCD(history=ctx.callback_data.as_history()).pack(),
+            callback_data=ChooseCategoriesCD(
+                history=ctx.callback_data.as_history() if ctx.callback_data is not None else [],
+            ).pack(),
         )
         return menu
 
@@ -52,7 +54,9 @@ class AddFooterKeyboardModification(
                 obj=InlineKeyboardButton(
                     text='✅ Выбрать все лоты',
                     callback_data=ChooseAllCategoriesCD(
-                        history=ctx.callback_data.as_history(),
+                        history=ctx.callback_data.as_history()
+                        if ctx.callback_data is not None
+                        else [],
                         record_id=ctx.data['record_id'],
                         data={
                             **(ctx.callback_data.data if ctx.callback_data is not None else {}),
@@ -66,7 +70,9 @@ class AddFooterKeyboardModification(
                 obj=InlineKeyboardButton(
                     text='🗑️ Удалить лоты',
                     callback_data=DeleteLotsCD(
-                        history=ctx.callback_data.as_history(),
+                        history=ctx.callback_data.as_history()
+                        if ctx.callback_data is not None
+                        else [],
                         record_id=ctx.data['record_id'],
                         data={
                             **(ctx.callback_data.data if ctx.callback_data is not None else {}),

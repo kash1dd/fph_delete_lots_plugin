@@ -58,6 +58,7 @@ async def get_offers_by_category(
 ) -> dict[int, list[OfferPreview]]:
     offers_by_category = {}
     for subcategory_type, subcategories in offers.items():
+    for _, subcategories in offers.items():
         for subcategory_id, offers in subcategories.items():
             offers_by_category[subcategory_id] = offers_by_category.get(subcategory_id, []) + list(
                 offers,
@@ -184,7 +185,7 @@ async def del_lots_menu(
 
 
 @router.callback_query(AddCategoryCD.filter())
-async def add_offer_to_state(
+async def add_category_to_chosen(
     call: CallbackQuery,
     callback_data: AddCategoryCD,
     data: dict[str, Any],
@@ -208,7 +209,7 @@ async def add_offer_to_state(
 
 
 @router.callback_query(RemoveCategoryCD.filter())
-async def remove_offer_from_state(
+async def remove_category_from_chosen(
     call: CallbackQuery,
     callback_data: RemoveCategoryCD,
     data: dict[str, Any],

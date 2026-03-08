@@ -68,6 +68,38 @@ class StateStorage:
         else:
             raise RecordNotFoundError
 
+    def get_record(self, record_id: int) -> StateRecord:
+        try:
+            return self._storage[record_id]
+        except KeyError:
+            raise RecordNotFoundError
+
+    def add_category_to_chosen(self, record_id: int, category_id: int) -> None:
+        try:
+            record = self._storage[record_id]
+        except KeyError:
+            raise RecordNotFoundError
+        if category_id not in record.chosen_categories:
+            new_chosen = record.chosen_categories + [category_id]
+            self._storage[record_id] = StateRecord(
+                record.categories,
+                new_chosen,
+                record.show_back,
+            )
+
+    def remove_category_from_chosen(self, record_id: int, category_id: int) -> None:
+        try:
+            record = self._storage[record_id]
+        except KeyError:
+            raise RecordNotFoundError
+        if category_id in record.chosen_categories:
+            new_chosen = [cat for cat in record.chosen_categories if cat != category_id]
+            self._storage[record_id] = StateRecord(
+                record.categories,
+                new_chosen,
+                record.show_back,
+            )
+
     def delete_record(self, record_id: int) -> None:
         if record_id in self._storage:
             del self._storage[record_id]

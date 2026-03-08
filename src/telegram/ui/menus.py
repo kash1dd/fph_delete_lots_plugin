@@ -63,7 +63,9 @@ class ConfirmDeleteMenuBuilder(
                 obj=InlineKeyboardButton(
                     text='✅ Да, удалить',
                     callback_data=ConfirmDeleteLotsCD(
-                        history=ctx.callback_data.as_history(),
+                        history=ctx.callback_data.as_history()
+                        if ctx.callback_data is not None
+                        else [],
                         record_id=ctx.data['record_id'],
                         data={
                             **(ctx.callback_data.data if ctx.callback_data is not None else {}),
@@ -76,7 +78,9 @@ class ConfirmDeleteMenuBuilder(
                 button_id='back',
                 obj=InlineKeyboardButton(
                     text='❌ Нет, отменить',
-                    callback_data=ctx.callback_data.pack_history(),
+                    callback_data=ctx.callback_data.pack_history()
+                    if ctx.callback_data is not None
+                    else None,
                 ),
             ),
         )

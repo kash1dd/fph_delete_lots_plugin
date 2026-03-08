@@ -23,9 +23,10 @@ from .telegram.router import router as delete_lots_tg_router
 class DeleteLotsPlugin(Plugin):
     _state_storage: StateStorage | None = None
 
-    async def pre_setup(self) -> None:
+    async def pre_setup(self) -> DeleteLotsProperties:
         self._state_storage = StateStorage()
         self.hub.workflow_data['delete_lots_state_storage'] = self._state_storage
+        return DeleteLotsProperties()
 
     async def properties(self) -> DeleteLotsProperties:
         return DeleteLotsProperties()
