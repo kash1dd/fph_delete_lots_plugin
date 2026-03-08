@@ -57,7 +57,6 @@ async def get_offers_by_category(
     offers: Mapping[SubcategoryType, Mapping[int, list[OfferPreview]]],
 ) -> dict[int, list[OfferPreview]]:
     offers_by_category = {}
-    for subcategory_type, subcategories in offers.items():
     for _, subcategories in offers.items():
         for subcategory_id, offers in subcategories.items():
             offers_by_category[subcategory_id] = offers_by_category.get(subcategory_id, []) + list(
