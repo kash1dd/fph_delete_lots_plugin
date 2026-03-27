@@ -52,15 +52,10 @@ class OffersListMenuBuilder(
             menu.main_keyboard.add_callback_button(
                 button_id=f'toggle_lots_category:{id}',
                 text=f'{"✅ " if id in ctx.chosen_subcategories else ""}{name}',
-                callback_data=OpenMenu(
-                    menu_id=MenuIds.delete_lots_list,
-                    menu_page=ctx.menu_page,
-                    view_page=ctx.view_page,
+                callback_data=OpenMenu.from_menu_context(
+                    context=ctx,
+                    context_data_update={'chosen_subcategories': new_chosen_subcategories},
                     ui_history=ctx.ui_history,
-                    context_data={
-                        **ctx.context_data,
-                        'chosen_subcategories': new_chosen_subcategories,
-                    },
                 ).pack(),
                 style='success' if selected else None,
             )
@@ -68,15 +63,10 @@ class OffersListMenuBuilder(
         menu.footer_keyboard.add_callback_button(
             button_id='select_all_subcategories',
             text='✅ Выбрать все лоты',
-            callback_data=OpenMenu(
-                menu_id=MenuIds.delete_lots_list,
-                menu_page=ctx.menu_page,
-                view_page=ctx.view_page,
+            callback_data=OpenMenu.from_menu_context(
+                context=ctx,
+                context_data_update={'chosen_subcategories': list(subcategories.keys())},
                 ui_history=ctx.ui_history,
-                context_data={
-                    **ctx.context_data,
-                    'chosen_subcategories': list(subcategories.keys()),
-                },
             ).pack(),
         )
 
