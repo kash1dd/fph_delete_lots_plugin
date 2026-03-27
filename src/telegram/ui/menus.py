@@ -1,11 +1,14 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
 from pydantic import Field
 
-from funpayhub.lib.base_app.telegram.app.ui.callbacks import OpenMenu
-from funpayhub.lib.telegram.ui import Menu, MenuBuilder, MenuContext
-from funpayhub.lib.base_app.telegram.app.ui.ui_finalizers import StripAndNavigationFinalizer
 from funpayhub.lib.translater import translater
+from funpayhub.lib.telegram.ui import Menu, MenuBuilder, MenuContext
+from funpayhub.lib.base_app.telegram.app.ui.callbacks import OpenMenu
+from funpayhub.lib.base_app.telegram.app.ui.ui_finalizers import StripAndNavigationFinalizer
+
 from funpayhub.app.telegram.ui.premade import confirmable_button
 
 from .ids import MenuIds
@@ -13,8 +16,9 @@ from .callbacks import DeleteLotsCD
 
 
 if TYPE_CHECKING:
-    from funpayhub.app.main import FunPayHub as FPH
     from funpaybotengine.storage import InMemoryStorage
+
+    from funpayhub.app.main import FunPayHub as FPH
 
 
 ru = translater.translate
@@ -47,7 +51,7 @@ class OffersListMenuBuilder(
 
             menu.main_keyboard.add_callback_button(
                 button_id=f'toggle_lots_category:{id}',
-                text=f'{'✅ ' if id in ctx.chosen_subcategories else ''}{name}',
+                text=f'{"✅ " if id in ctx.chosen_subcategories else ""}{name}',
                 callback_data=OpenMenu(
                     menu_id=MenuIds.delete_lots_list,
                     menu_page=ctx.menu_page,
@@ -55,14 +59,14 @@ class OffersListMenuBuilder(
                     ui_history=ctx.ui_history,
                     context_data={
                         **ctx.context_data,
-                        'chosen_subcategories': new_chosen_subcategories
-                    }
+                        'chosen_subcategories': new_chosen_subcategories,
+                    },
                 ).pack(),
-                style='success' if selected else None
+                style='success' if selected else None,
             )
 
         menu.footer_keyboard.add_callback_button(
-            button_id=f'select_all_subcategories',
+            button_id='select_all_subcategories',
             text='✅ Выбрать все лоты',
             callback_data=OpenMenu(
                 menu_id=MenuIds.delete_lots_list,
@@ -71,9 +75,9 @@ class OffersListMenuBuilder(
                 ui_history=ctx.ui_history,
                 context_data={
                     **ctx.context_data,
-                    'chosen_subcategories': list(subcategories.keys())
-                }
-            ).pack()
+                    'chosen_subcategories': list(subcategories.keys()),
+                },
+            ).pack(),
         )
 
         menu.footer_keyboard.add_row(
@@ -83,9 +87,9 @@ class OffersListMenuBuilder(
                 text='🗑️ Удалить лоты',
                 callback_data=DeleteLotsCD(
                     ui_history=ctx.as_ui_history(),
-                    chosen_subcategories=chosen_subcategories
-                ).pack()
-            )
+                    chosen_subcategories=chosen_subcategories,
+                ).pack(),
+            ),
         )
 
         return menu

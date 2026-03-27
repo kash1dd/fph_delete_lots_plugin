@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 import asyncio
+from typing import TYPE_CHECKING
 from contextlib import suppress
 
 from aiogram import Router, html
@@ -9,15 +9,16 @@ from aiogram.types import Message
 from aiogram.filters import Command
 from funpaybotengine.types import OfferFields
 
-from .ui import (
-    MenuIds,
-    DeleteLotsCD,
-    OffersListMenuContext
-)
+from .ui import MenuIds, DeleteLotsCD, OffersListMenuContext
 from ..properties import DeleteLotsProperties
 
+
 if TYPE_CHECKING:
-    from aiogram.types import Message, CallbackQuery as Query
+    from aiogram.types import (
+        Message,
+        CallbackQuery as Query,
+    )
+
     from funpayhub.app.main import FunPayHub as FPH
 
 
@@ -31,7 +32,10 @@ async def del_lots_cmd(msg: Message) -> None:
 
 @router.callback_query(DeleteLotsCD.filter())
 async def delete_lots(
-    q: Query, cbd: DeleteLotsCD, hub: FPH, plugin_properties: DeleteLotsProperties
+    q: Query,
+    cbd: DeleteLotsCD,
+    hub: FPH,
+    plugin_properties: DeleteLotsProperties,
 ) -> None:
     if not cbd.chosen_subcategories:
         await q.answer('❌ Ты не выбрал ни одной категории', show_alert=True)

@@ -30,7 +30,7 @@ class DeleteLotsPlugin(Plugin):
         self,
     ) -> dict[str, type[MenuModification] | list[type[MenuModification]]]:
         return {
-            MenuIds.main_menu: AddDeleteLotsButtonModification
+            MenuIds.main_menu: AddDeleteLotsButtonModification,
         }
 
     async def commands(self) -> Command | list[Command] | None:
