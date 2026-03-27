@@ -1,28 +1,15 @@
 from __future__ import annotations
 
 from .ids import MenuIds
-from .menus import OffersListMenuBuilder, ConfirmDeleteMenuBuilder
-from .callbacks import (
-    DeleteLotsCD,
-    AddCategoryCD,
-    RemoveCategoryCD,
-    ChooseCategoriesCD,
-    ConfirmDeleteLotsCD,
-    ChooseAllCategoriesCD,
-)
-from .modifications import AddFooterKeyboardModification, AddDeleteLotsButtonModification
+from .menus import OffersListMenuBuilder, OffersListMenuContext
+from .callbacks import DeleteLotsCD
+from .modifications import AddDeleteLotsButtonModification
 
 
 __all__ = (
-    'ChooseCategoriesCD',
     'AddDeleteLotsButtonModification',
     'OffersListMenuBuilder',
-    'AddCategoryCD',
-    'RemoveCategoryCD',
-    'AddFooterKeyboardModification',
-    'ChooseAllCategoriesCD',
     'MenuIds',
     'DeleteLotsCD',
-    'ConfirmDeleteLotsCD',
-    'ConfirmDeleteMenuBuilder',
+    'OffersListMenuContext',
 )

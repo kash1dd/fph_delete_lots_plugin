@@ -11,6 +11,7 @@ class DeleteLotsProperties(Properties):
             description="Настройки Delete Lots Plugin'а",
             file='config/delete_lots.toml',
         )
+
         self.delete_active_lots = self.attach_node(
             ToggleParameter(
                 id='delete_active_lots',
@@ -21,6 +22,7 @@ class DeleteLotsProperties(Properties):
                 default_value=False,
             ),
         )
+
         self.delete_not_active_lots = self.attach_node(
             ToggleParameter(
                 id='delete_not_active_lots',
@@ -29,6 +31,7 @@ class DeleteLotsProperties(Properties):
                 default_value=True,
             ),
         )
+
         self.show_delete_lots_button_in_menu = self.attach_node(
             ToggleParameter(
                 id='show_delete_lots_button_in_menu',

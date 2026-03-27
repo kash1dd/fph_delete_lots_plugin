@@ -1,93 +1,108 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
+from pydantic import Field
 
-from aiogram.types import InlineKeyboardButton
-
-from funpayhub.lib.telegram.ui import Menu, Button, MenuBuilder, MenuContext, KeyboardBuilder
+from funpayhub.lib.base_app.telegram.app.ui.callbacks import OpenMenu
+from funpayhub.lib.telegram.ui import Menu, MenuBuilder, MenuContext
 from funpayhub.lib.base_app.telegram.app.ui.ui_finalizers import StripAndNavigationFinalizer
+from funpayhub.lib.translater import translater
+from funpayhub.app.telegram.ui.premade import confirmable_button
 
 from .ids import MenuIds
-from .callbacks import AddCategoryCD, RemoveCategoryCD, ConfirmDeleteLotsCD
+from .callbacks import DeleteLotsCD
+
+
+if TYPE_CHECKING:
+    from funpayhub.app.main import FunPayHub as FPH
+    from funpaybotengine.storage import InMemoryStorage
+
+
+ru = translater.translate
+
+
+class OffersListMenuContext(MenuContext):
+    chosen_subcategories: list[int] = Field(default_factory=list)
 
 
 class OffersListMenuBuilder(
     MenuBuilder,
     menu_id=MenuIds.delete_lots_list,
-    context_type=MenuContext,
+    context_type=OffersListMenuContext,
 ):
-    async def build(self, ctx: MenuContext) -> Menu:
-        categories: dict[int, str] = ctx.data['categories']
-        chosen_categories: list[int] = ctx.data['chosen_categories']
+    async def build(self, ctx: OffersListMenuContext, hub: FPH) -> Menu:
+        menu = Menu(
+            header_text=ru('🗑️ <b><u>Удаление лотов</u></b>'),
+            footer_text=ru('<i>Выбери категории, лоты которых ты хочешь удалить</i>'),
+            finalizer=StripAndNavigationFinalizer(),
+        )
 
-        kb = KeyboardBuilder()
+        subcategories = await self.get_subcategories(hub)
+        chosen_subcategories = [i for i in ctx.chosen_subcategories if i in subcategories]
+        for id, name in subcategories.items():
+            selected = id in chosen_subcategories
+            if selected:
+                new_chosen_subcategories = [i for i in chosen_subcategories if i != id]
+            else:
+                new_chosen_subcategories = chosen_subcategories + [id]
 
-        for category_id, category_name in categories.items():
-            kwargs = {
-                'record_id': ctx.data['record_id'],
-                'history': ctx.callback_data.as_history() if ctx.callback_data is not None else [],
-                'category_id': category_id,
-                'data': {
-                    **(ctx.callback_data.data if ctx.callback_data is not None else {}),
-                    'menu_page': ctx.menu_page,
-                },
-            }
-            emoji = '✅ ' if category_id in chosen_categories else ' '
-
-            kb.add_callback_button(
-                button_id=f'delete_lots_category_{category_id}',
-                text=f'{emoji}{category_name}',
-                callback_data=AddCategoryCD(**kwargs).pack()
-                if category_id not in chosen_categories
-                else RemoveCategoryCD(**kwargs).pack(),
-                style='success' if category_id in chosen_categories else None,
+            menu.main_keyboard.add_callback_button(
+                button_id=f'toggle_lots_category:{id}',
+                text=f'{'✅ ' if id in ctx.chosen_subcategories else ''}{name}',
+                callback_data=OpenMenu(
+                    menu_id=MenuIds.delete_lots_list,
+                    menu_page=ctx.menu_page,
+                    view_page=ctx.view_page,
+                    ui_history=ctx.ui_history,
+                    context_data={
+                        **ctx.context_data,
+                        'chosen_subcategories': new_chosen_subcategories
+                    }
+                ).pack(),
+                style='success' if selected else None
             )
 
-        return Menu(
-            main_keyboard=kb,
-            header_text='🗑️ <b><u>Удаление лотов</u></b>',
-            footer_text='<i>Выбери категории, лоты которых ты хочешь удалить</i>',
-            finalizer=StripAndNavigationFinalizer(back_button=ctx.data['show_back']),
+        menu.footer_keyboard.add_callback_button(
+            button_id=f'select_all_subcategories',
+            text='✅ Выбрать все лоты',
+            callback_data=OpenMenu(
+                menu_id=MenuIds.delete_lots_list,
+                menu_page=ctx.menu_page,
+                view_page=ctx.view_page,
+                ui_history=ctx.ui_history,
+                context_data={
+                    **ctx.context_data,
+                    'chosen_subcategories': list(subcategories.keys())
+                }
+            ).pack()
         )
 
-
-class ConfirmDeleteMenuBuilder(
-    MenuBuilder,
-    menu_id=MenuIds.confirm_delete,
-    context_type=MenuContext,
-):
-    async def build(self, ctx: MenuContext) -> Menu:
-        kb = KeyboardBuilder()
-
-        kb.add_row(
-            Button(
-                button_id='delete_lots_confirm_delete',
-                obj=InlineKeyboardButton(
-                    text='✅ Да, удалить',
-                    callback_data=ConfirmDeleteLotsCD(
-                        history=ctx.callback_data.as_history()
-                        if ctx.callback_data is not None
-                        else [],
-                        record_id=ctx.data['record_id'],
-                        data={
-                            **(ctx.callback_data.data if ctx.callback_data is not None else {}),
-                            'menu_page': ctx.menu_page,
-                        },
-                    ).pack(),
-                ),
-            ),
-            Button(
-                button_id='back',
-                obj=InlineKeyboardButton(
-                    text='❌ Нет, отменить',
-                    callback_data=ctx.callback_data.pack_history()
-                    if ctx.callback_data is not None
-                    else None,
-                ),
-            ),
+        menu.footer_keyboard.add_row(
+            *confirmable_button(
+                ctx,
+                button_id='delete_lots',
+                text='🗑️ Удалить лоты',
+                callback_data=DeleteLotsCD(
+                    ui_history=ctx.as_ui_history(),
+                    chosen_subcategories=chosen_subcategories
+                ).pack()
+            )
         )
 
-        return Menu(
-            main_keyboard=kb,
-            finalizer=StripAndNavigationFinalizer(),
-            header_text='❗ <b><u>Подтверждение удаления</u></b>',
-            footer_text='❓ <i>Ты уверен, что хочешь удалить лоты в выбранных категориях?</i>',
-        )
+        return menu
+
+    async def get_subcategories(self, hub: FPH) -> dict[int, str]:
+        offers = (await hub.funpay.profile()).offers or {}
+        categories = {}
+        for subcategory_type, subcategories in offers.items():
+            for subcategory_id, offers in subcategories.items():
+                storage: InMemoryStorage = hub.funpay.bot.storage  # type: ignore
+                category = storage._subcategories[subcategory_type][subcategory_id][1]  # type: ignore
+                subcategory = await hub.funpay.bot.storage.get_subcategory(
+                    subcategory_type=subcategory_type,
+                    subcategory_id=subcategory_id,
+                )
+
+                if subcategory is not None:
+                    categories[subcategory_id] = f'{subcategory.name} {category.name}'
+
+        return categories
