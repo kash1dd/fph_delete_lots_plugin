@@ -1,7 +1,7 @@
 {
   "manifest": 1,
   "plugin_version": "1.0.1",
-  "app_version": ">=0.2.7",
+  "app_version": ">=0.5.7",
   "plugin_id": "com.github.kash1dd.delete_lots",
   "name": "Delete Lots Plugin",
   "description": "Добавляет команду /del_lots, с помощью которой можно выбрать категории, в которых нужно удалить лоты.",
